@@ -3,21 +3,43 @@ import { StyleSheet, Text, TextInput, View, Button, TouchableOpacity, Alert, Saf
 import { Link } from 'expo-router';
 
 export default function App() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [name, setName] = useState("");
+    const [bday, setBday] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const handleLogin = () => {
-        if (!email || !password) {
-            Alert.alert('Erro', 'Preencha todos os campos!');
-        } else {
-            //lógica de autenticação (via API, Firebase, etc.)
-            Alert.alert('Sucesso', `Bem-vindo, ${email}!`);
+    const handleRegister = () => {
+        if (!name || !bday || !email || !password) {
+            return alert('Todos os campos devem ser preenchidos');
         }
-    };
 
-    const handleSignup = () => {
-        Alert.alert('Cadastro', 'Vá para a tela de cadastro');
-    };
+        const formData = {name: name, bday: bday, email: email, password: password};
+
+        try {
+            const res = await fetch("http://localhost:8000/registro", {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+            switch (response.status) {
+              case 201:
+                alert("Usuário criado");
+                break;
+              case 406:
+                alert("Preencha todos os campos");
+                break;
+              case 418:
+                alert("Email já cadastrado");
+                break;
+              default:
+                alert("Erro ao se conectar com servidor");
+                break;
+            }
+          } catch (error) {}
+    }
 
     return (
         <SafeAreaView style={styles.containerup}>
@@ -30,11 +52,25 @@ export default function App() {
             <View style={styles.formup}>
                 <TextInput
                     style={styles.inputup}
+                    placeholder="Name"
+                    placeholderTextColor="#fff"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                />
+                <TextInput
+                    style={styles.inputup}
                     placeholder="E-mail"
                     placeholderTextColor="#fff"
                     keyboardType="email-address"
                     value={email}
                     onChangeText={(text) => setEmail(text)}
+                />
+                <TextInput
+                    style={styles.inputup}
+                    placeholder="dd/mm/aaaa"
+                    placeholderTextColor="#fff"
+                    value={bday}
+                    onChangeText={(text) => setBday(text)}
                 />
                 <TextInput
                     style={styles.inputup}
@@ -44,18 +80,12 @@ export default function App() {
                     value={password}
                     onChangeText={(text) => setPassword(text)}
                 />
-                <TextInput
-                    style={styles.inputup}
-                    placeholder="Confime sua senha"
-                    placeholderTextColor="#fff"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={(text) => setPassword(text)}
-                />
+                <Link href="/">
+                    <TouchableOpacity style={styles.buttonup} onPress={handleRegister}>
+                        <Text style={styles.buttonTextup}>Cadastre-se</Text>
+                    </TouchableOpacity>
+                </Link>
 
-                <TouchableOpacity style={styles.buttonup} onPress={handleLogin}>
-                    <Text style={styles.buttonTextup}>Cadastre-se</Text>
-                </TouchableOpacity>
                 <View style={styles.signupContainerup}>
                     <Text style={styles.signupTextup}>Já tem conta?</Text>
                     <Link href="/">
@@ -107,6 +137,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
+        marginLeft:650
     },
     buttonTextup: {
         color: '#fff',

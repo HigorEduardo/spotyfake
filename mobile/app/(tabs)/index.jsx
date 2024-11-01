@@ -9,11 +9,36 @@ export default function App() {
 
   const handleLogin = () => {
     if (!email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
-    } else {
-      // lógica de autenticação (via API, Firebase, etc.)
-      Alert.alert('Sucesso', `Bem-vindo, ${email}!`);
+      return alert('Todos os campos devem ser preenchidos');
     }
+    
+    const formData = {email: email, password: password};
+
+    try {
+      const res = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      switch (response.status) {
+        case 2010:
+          alert("ok");
+          console.log(res.token)
+          break;
+        case 406:
+          alert("Preencha todos os campos");
+          break;
+        case 418:
+          alert("Email já cadastrado");
+          break;
+        default:
+          alert("Erro ao se conectar com servidor");
+          break;
+      }
+    } catch (error) {}
   };
 
   return (
@@ -42,7 +67,7 @@ export default function App() {
           onChangeText={(text) => setPassword(text)}
         />
         <View style={styles.signupContainer}>
-        <Link href="/Cadastro" >
+        <Link href="/Home" >
         <Button title="Entrar" onPress={handleLogin} color="#a80000" />
         </Link>
         </View>
