@@ -67,7 +67,7 @@ export default function App() {
           onChangeText={(text) => setPassword(text)}
         />
         <View style={styles.signupContainer}>
-        <Link href="/Home" >
+        <Link href="/home" >
         <Button title="Entrar" onPress={handleLogin} color="#a80000" />
         </Link>
         </View>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   image: {
-    marginTop: -100,
+    marginTop: -60,
     marginBottom: 50,
     width: 200,
     height: 200,

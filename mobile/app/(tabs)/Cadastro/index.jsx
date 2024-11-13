@@ -108,6 +108,7 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     headerTextup: {
+        marginTop: -50,
         fontSize: 32,
         fontWeight: 'bold',
         color: '#a80000',
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     signupContainerup: {
-        marginTop: 20,
+        marginTop:-60,
         flexDirection: 'row',
         justifyContent: 'center',
     },
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
 
     },
     imageup: {
-        marginTop: -50,
+        marginTop: -20,
         marginBottom: 50,
         width: 200,
         height: 200

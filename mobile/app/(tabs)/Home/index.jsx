@@ -41,7 +41,7 @@ export default function App() {
           onChangeText={(text) => setPassword(text)}
         />
         <View style={styles.signupContainer}>
-        <Link href="/Home" >
+        <Link href="/Perfil" >
         <Button title="Entrar" onPress={handleLogin} color="#a80000" />
         </Link>
         </View>
