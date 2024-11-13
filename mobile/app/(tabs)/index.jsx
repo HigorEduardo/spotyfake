@@ -15,7 +15,7 @@ export default function App() {
     const formData = {email: email, password: password};
 
     try {
-      const res = await fetch("http://localhost:8000/login", {
+      const res = fetch("http://localhost:8000/login", {
         method: "POST",
         headers: {
           Accept: "application/json",

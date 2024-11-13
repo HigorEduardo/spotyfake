@@ -16,7 +16,7 @@ export default function App() {
         const formData = {name: name, bday: bday, email: email, password: password};
 
         try {
-            const res = await fetch("http://localhost:8000/registro", {
+            const res = fetch("http://localhost:8000/registro", {
               method: "POST",
               headers: {
                 Accept: "application/json",
