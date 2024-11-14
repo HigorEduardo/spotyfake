@@ -1,22 +1,76 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, Image, SafeAreaView, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Button, Image, SafeAreaView, TextInput, Alert, TouchableOpacity } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfileScreen() {
-  const [name, setName] = useState('João Silva');
-  const [email, setEmail] = useState('joao.silva@gmail.com');
-  const [bio, setBio] = useState('Amante de música e desenvolvedor React Native.');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/get.users', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        setName(userData.name);
+        setEmail(userData.email);
+        setBio(userData.bio);
+      } else {
+        Alert.alert('Erro', 'Não foi possível carregar os dados do usuário.');
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao conectar ao servidor.');
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      Alert.alert("Permissão necessária", "Permita o acesso à galeria para selecionar uma imagem.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri); 
+    }
+  };
 
   const handleSave = () => {
     setIsEditing(false);
-    alert('Perfil atualizado com sucesso!');
+    Alert.alert('Perfil atualizado', 'Suas alterações foram salvas.');
   };
 
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.margem}>
+      <View style={styles.margem}>
       <View style={styles.profileHeader}>
-        <Image source={require('../../../assets/images/avatar.png')} style={styles.avatar} />
+        <TouchableOpacity onPress={pickImage}>
+          <Image
+            source={profileImage ? { uri: profileImage } : require('../../../assets/images/avatar.png')}
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
         {isEditing ? (
           <TextInput
             style={styles.nameInput}
@@ -61,7 +115,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   margem:{
-   margin:20, 
+    margin:20
   },
   profileHeader: {
     alignItems: 'center',

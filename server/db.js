@@ -39,6 +39,11 @@ const User = sequelize.define('user', {
         type: Sequelize.DataTypes.ENUM('ativo', 'inativo'),
         allowNull: false,
         defaultValue: 'inativo'
+    },
+    profile_image:{
+        type:Sequelize.DataTypes.STRING,
+        allowNull:true
+
     }
 })
 
