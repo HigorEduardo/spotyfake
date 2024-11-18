@@ -32,6 +32,29 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleSendImage = async () =>{
+    try{
+      const data ={
+        "file":image,
+        "uploud_preset":'ml_default'
+      }
+      const res = await fetch('/*api*/',{
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringfy(data)
+      });
+      const result = await res.json();
+      setImage(result.url)
+      setUserInfo({ ...userinfo, profile_image:result.url })
+      await saveNewImageURLonBackend(result)
+    }
+    catch (e) {
+      console.log(e)
+    }
+  }
+
   useEffect(() => {
     fetchUserData();
   }, []);
