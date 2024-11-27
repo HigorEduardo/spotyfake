@@ -1,116 +1,120 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, Image } from 'react-native';
-import { Link } from 'expo-router';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 
-export default function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const HomeScreen = () => {
+  const [data, setData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
-    } else {
-      // lógica de autenticação (via API, Firebase, etc.)
-      Alert.alert('Sucesso', `Bem-vindo, ${email}!`);
-    }
+  // Fetch data from API
+  useEffect(() => {
+    fetch('https://seu-backend.com/api/artists') // Substitua pela sua rota
+      .then(response => response.json())
+      .then(json => setData(json))
+      .catch(err => console.error('Error fetching data:', err));
+  }, []);
+
+  const openModal = (item) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+    setModalVisible(false);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Só para ter algo na home </Text>
-        <Text style={styles.subHeaderText}>Entre para ouvir sua música favorita!</Text>
-      </View>
+    <View style={styles.container}>
+      <Text style={styles.title}>Artistas</Text>
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.item} onPress={() => openModal(item)}>
+            <Text style={styles.itemText}>{item.name}</Text>
+          </TouchableOpacity>
+        )}
+      />
 
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          placeholderTextColor="#fff"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor="#fff"
-          secureTextEntry
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-        <View style={styles.signupContainer}>
-        <Link href="/Perfil" >
-        <Button title="Entrar" onPress={handleLogin} color="#a80000" />
-        </Link>
+      {/* Modal for details */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {selectedItem && (
+              <>
+                <Text style={styles.modalTitle}>{selectedItem.name}</Text>
+                <Text style={styles.modalText}>Álbum: {selectedItem.album}</Text>
+                <Text style={styles.modalText}>Música: {selectedItem.song}</Text>
+              </>
+            )}
+            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Não tem uma conta?</Text>
-          <Link href="/Cadastro">
-            <Text style={styles.signupLink}>Cadastre-se</Text>
-          </Link>
-        </View>
-      </View>
-    </SafeAreaView>
+      </Modal>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  header: {
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  item: {
+    padding: 16,
+    marginVertical: 8,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+  },
+  itemText: {
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  headerText: {
-    fontSize: 32,
+  modalContent: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#a80000',
+    marginBottom: 10,
   },
-  subHeaderText: {
+  modalText: {
     fontSize: 16,
-    color: 'white',
+    marginBottom: 10,
+  },
+  closeButton: {
     marginTop: 10,
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
   },
-  form: {
-    paddingHorizontal: 20,
-  },
-
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
+  closeButtonText: {
+    color: '#fff',
     fontSize: 16,
-    backgroundColor: 'grey',
-    color: 'white',
-  },
-  signupContainer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  signupText: {
-    fontSize: 16,
-    color: 'white',
-    marginRight: 5,
-  },
-  signupLink: {
-    color: '#a80000',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 5,
-  },
-  image: {
-    marginTop: -100,
-    marginBottom: 50,
-    width: 200,
-    height: 200,
   },
 });
+
+export default HomeScreen;
