@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet, Image } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // Certifique-se de instalar react-native-vector-icons
 
 const HomeScreen = () => {
-  const [data, setData] = useState([]);
+  const [artists, setArtists] = useState([]);
+  const [albums, setAlbums] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   // Fetch data from API
   useEffect(() => {
-    fetch('https://seu-backend.com/api/artists') // Substitua pela sua rota
-      .then(response => response.json())
-      .then(json => setData(json))
-      .catch(err => console.error('Error fetching data:', err));
+    // Fetch artistas
+    fetch('https://seu-backend.com/api/artists')
+      .then((response) => response.json())
+      .then((json) => setArtists(json))
+      .catch((err) => console.error('Error fetching artists:', err));
+
+    // Fetch álbuns
+    fetch('https://seu-backend.com/api/albums')
+      .then((response) => response.json())
+      .then((json) => setAlbums(json))
+      .catch((err) => console.error('Error fetching albums:', err));
   }, []);
 
   const openModal = (item) => {
@@ -26,15 +35,34 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Artistas</Text>
+      {/* Artists Section */}
+      <Text style={styles.sectionTitle}>Artistas</Text>
       <FlatList
-        data={data}
+        horizontal
+        data={artists}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => openModal(item)}>
-            <Text style={styles.itemText}>{item.name}</Text>
+          <TouchableOpacity style={styles.card} onPress={() => openModal(item)}>
+            <Image source={{ uri: item.image }} style={styles.image} />
+            <Text style={styles.cardTitle}>{item.name}</Text>
           </TouchableOpacity>
         )}
+        showsHorizontalScrollIndicator={false}
+      />
+
+      {/* Albums Section */}
+      <Text style={styles.sectionTitle}>Álbuns</Text>
+      <FlatList
+        horizontal
+        data={albums}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity style={styles.card} onPress={() => openModal(item)}>
+            <Image source={{ uri: item.cover }} style={styles.image} />
+            <Text style={styles.cardTitle}>{item.title}</Text>
+          </TouchableOpacity>
+        )}
+        showsHorizontalScrollIndicator={false}
       />
 
       {/* Modal for details */}
@@ -48,9 +76,11 @@ const HomeScreen = () => {
           <View style={styles.modalContent}>
             {selectedItem && (
               <>
-                <Text style={styles.modalTitle}>{selectedItem.name}</Text>
-                <Text style={styles.modalText}>Álbum: {selectedItem.album}</Text>
-                <Text style={styles.modalText}>Música: {selectedItem.song}</Text>
+                <Image source={{ uri: selectedItem.image || selectedItem.cover }} style={styles.modalImage} />
+                <Text style={styles.modalTitle}>{selectedItem.name || selectedItem.title}</Text>
+                <Text style={styles.modalText}>
+                  {selectedItem.description || 'Detalhes sobre este item'}
+                </Text>
               </>
             )}
             <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
@@ -66,50 +96,73 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#1c1c1e',
     padding: 16,
-    backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 24,
+  sectionTitle: {
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 16,
+    color: '#fff',
+    marginBottom: 8,
+    marginTop: 16,
   },
-  item: {
-    padding: 16,
-    marginVertical: 8,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
+  card: {
+    backgroundColor: '#2c2c2e',
+    borderRadius: 12,
+    marginRight: 12,
+    overflow: 'hidden',
+    width: 120,
+    alignItems: 'center',
   },
-  itemText: {
-    fontSize: 18,
+  image: {
+    width: '100%',
+    height: 120,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 8,
+    marginBottom: 8,
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
   modalContent: {
     width: '80%',
     padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+  },
+  modalImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
   },
   modalText: {
     fontSize: 16,
-    marginBottom: 10,
+    textAlign: 'center',
+    color: '#666',
   },
   closeButton: {
-    marginTop: 10,
-    padding: 10,
+    marginTop: 16,
+    padding: 12,
     backgroundColor: '#007BFF',
-    borderRadius: 5,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
   },
   closeButtonText: {
     color: '#fff',
