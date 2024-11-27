@@ -1,116 +1,134 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, Image } from 'react-native';
-import { Link } from 'expo-router';
-import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { View, Text, StyleSheet, TextInput, Image, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native'; 
 
-export default function App() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Home = () => {
+  const navigation = useNavigation(); 
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
-    } else {
-      // lógica de autenticação (via API, Firebase, etc.)
-      Alert.alert('Sucesso', `Bem-vindo, ${email}!`);
-    }
-  };
+  const items = [
+    { 
+      id: 1, 
+      name: 'Rock Classics', 
+      image: 'https://via.placeholder.com/150', 
+    },
+    { 
+      id: 2, 
+      name: 'Pop Hits', 
+      image: 'https://via.placeholder.com/150', 
+    },
+    { 
+      id: 3, 
+      name: 'Pop Hits', 
+      image: 'https://via.placeholder.com/150', 
+    },
+    { 
+      id: 4, 
+      name: 'Pop Hits', 
+      image: 'https://via.placeholder.com/150', 
+    },
+  ];
+  
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Só para ter algo na home </Text>
-        <Text style={styles.subHeaderText}>Entre para ouvir sua música favorita!</Text>
+    <View style={styles.container}>
+      <View style={styles.topBar}>
+        <Ionicons name="person-circle-outline" size={24} color="#FFFFFF" />
+        <TextInput style={styles.searchBar} placeholder="Pesquisar..." placeholderTextColor="#AFAFAF" />
+        <Ionicons name="home-outline" size={20} color="#FFFFFF" />
       </View>
 
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          placeholderTextColor="#fff"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          placeholderTextColor="#fff"
-          secureTextEntry
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-        />
-        <View style={styles.signupContainer}>
-        <Link href="/Perfil" >
-        <Button title="Entrar" onPress={handleLogin} color="#a80000" />
-        </Link>
-        </View>
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Não tem uma conta?</Text>
-          <Link href="/Cadastro">
-            <Text style={styles.signupLink}>Cadastre-se</Text>
-          </Link>
-        </View>
+      <Text style={styles.sectionTitle}>Você pode gostar:</Text>
+      {items.map((item) => (
+        <Pressable
+        key={item.id}
+        style={styles.card}
+        onPress={() => {
+          navigation.navigate('Player', { 
+            name: item.name, 
+            image: item.image, 
+            description: item.description, 
+            tracks: item.tracks 
+          });
+        }
+        }
+      >
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <Text style={styles.text}>{item.name}</Text>
+      </Pressable>
+      ))}
+
+      <Text style={styles.sectionTitle}>Artistas populares:</Text>
+      <View style={styles.grid}>
+        {[ 
+          'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO2sUkRq-default.jpg',
+          'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO0FsQXS-default.jpg',
+          'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO1vscg0-default.jpg',
+        ].map((imageUri, index) => (
+          <Image key={index} style={styles.circleCard} source={{ uri: imageUri }} />
+        ))}
       </View>
-    </SafeAreaView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    justifyContent: 'center',
+    padding: 15,
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  headerText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#a80000',
-  },
-  subHeaderText: {
-    fontSize: 16,
-    color: 'white',
-    marginTop: 10,
-  },
-  form: {
-    paddingHorizontal: 20,
-  },
-
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    fontSize: 16,
-    backgroundColor: 'grey',
-    color: 'white',
-  },
-  signupContainer: {
-    marginTop: 20,
+  topBar: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
   },
-  signupText: {
-    fontSize: 16,
-    color: 'white',
-    marginRight: 5,
+  searchBar: {
+    flex: 1,
+    height: 35,
+    backgroundColor: '#6A0DAD',
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    marginHorizontal: 8,
+    color: '#FFFFFF',
+    fontSize: 12,
   },
-  signupLink: {
-    color: '#a80000',
-    fontSize: 16,
+  sectionTitle: {
+    fontSize: 14,
     fontWeight: 'bold',
-    marginLeft: 5,
+    color: '#FFFFFF',
+    marginVertical: 8,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 8,
   },
   image: {
-    marginTop: -100,
-    marginBottom: 50,
-    width: 200,
-    height: 200,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  text: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  circleCard: {
+    width: '28%',
+    aspectRatio: 1,
+    borderRadius: 50,
+    marginBottom: 10,
   },
 });
+
+export default Home;
