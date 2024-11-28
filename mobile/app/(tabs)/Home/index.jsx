@@ -1,34 +1,28 @@
+// Home.js
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, Image, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; 
+import { useNavigation } from '@react-navigation/native'; // Importando useNavigation para navegação
 
 const Home = () => {
-  const navigation = useNavigation(); 
+  const navigation = useNavigation(); // Hook de navegação
 
   const items = [
-    { 
-      id: 1, 
-      name: 'Rock Classics', 
-      image: 'https://via.placeholder.com/150', 
+    {
+      id: 1,
+      name: 'Rock Classics',
+      image: 'https://via.placeholder.com/150',
+      description: 'Uma coleção dos melhores clássicos do rock.',
+      tracks: 30
     },
-    { 
-      id: 2, 
-      name: 'Pop Hits', 
-      image: 'https://via.placeholder.com/150', 
-    },
-    { 
-      id: 3, 
-      name: 'Pop Hits', 
-      image: 'https://via.placeholder.com/150', 
-    },
-    { 
-      id: 4, 
-      name: 'Pop Hits', 
-      image: 'https://via.placeholder.com/150', 
+    {
+      id: 2,
+      name: 'Pop Hits',
+      image: 'https://via.placeholder.com/150',
+      description: 'Os maiores sucessos do pop atual.',
+      tracks: 50
     },
   ];
-  
 
   return (
     <View style={styles.container}>
@@ -41,26 +35,25 @@ const Home = () => {
       <Text style={styles.sectionTitle}>Você pode gostar:</Text>
       {items.map((item) => (
         <Pressable
-        key={item.id}
-        style={styles.card}
-        onPress={() => {
-          navigation.navigate('Player', { 
-            name: item.name, 
-            image: item.image, 
-            description: item.description, 
-            tracks: item.tracks 
-          });
-        }
-        }
-      >
-        <Image source={{ uri: item.image }} style={styles.image} />
-        <Text style={styles.text}>{item.name}</Text>
-      </Pressable>
+          key={item.id}
+          style={styles.card}
+          onPress={() =>
+            navigation.navigate('Player', { 
+              name: item.name,
+              image: item.image,
+              description: item.description,
+              tracks: item.tracks 
+            })
+          }
+        >
+          <Image source={{ uri: item.image }} style={styles.image} />
+          <Text style={styles.text}>{item.name}</Text>
+        </Pressable>
       ))}
 
       <Text style={styles.sectionTitle}>Artistas populares:</Text>
       <View style={styles.grid}>
-        {[ 
+        {[
           'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO2sUkRq-default.jpg',
           'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO0FsQXS-default.jpg',
           'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO1vscg0-default.jpg',

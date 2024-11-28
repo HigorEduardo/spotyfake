@@ -1,20 +1,19 @@
+// Player.js
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useRoute } from '@react-navigation/native'; // Importando useRoute para acessar os parâmetros
 
-const Player = ({ route }) => {
-    const { name, image, description, tracks } = route.params; //
+
+const Player = () => {
+  const route = useRoute(); // Obtendo os parâmetros da rota
+  const { name, image, description, tracks } = route.params; // Acessando os parâmetros passados
+
   return (
     <View style={styles.container}>
-      {name && image ? (
-        <>
-          <Image source={{ uri: image }} style={styles.image} />
-          <Text style={styles.name}>{name}</Text>
-          {description && <Text style={styles.description}>{description}</Text>}
-          {tracks && <Text style={styles.tracks}>{tracks} faixas disponíveis</Text>}
-        </>
-      ) : (
-        <Text style={styles.error}>Nenhum dado foi enviado para esta página.</Text>
-      )}
+      <Image source={{ uri: image }} style={styles.image} />
+      <Text style={styles.title}>{name}</Text>
+      <Text style={styles.description}>{description}</Text>
+      <Text style={styles.tracks}>Número de faixas: {tracks}</Text>
     </View>
   );
 };
@@ -25,22 +24,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'black',
-    padding: 20,
+    padding: 15,
   },
   image: {
     width: 200,
     height: 200,
-    borderRadius: 15,
+    borderRadius: 10,
     marginBottom: 20,
   },
-  name: {
+  title: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: '#FFFFFF',
+    marginBottom: 10,
   },
-  error: {
+  description: {
     fontSize: 16,
-    color: '#FF0000',
+    color: '#FFFFFF',
+    marginBottom: 10,
+  },
+  tracks: {
+    fontSize: 14,
+    color: '#AFAFAF',
   },
 });
 
