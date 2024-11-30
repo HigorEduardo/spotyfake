@@ -11,6 +11,7 @@ app.use(cors())
 
 app.use('/autenticacao', rotas_autenticacao)
 app.use('/usuario', rotas_autenticacao)
+app.use('/')
 
 
 app.listen(8000);

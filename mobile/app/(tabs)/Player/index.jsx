@@ -1,22 +1,35 @@
-// Player.js
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { useRoute } from '@react-navigation/native'; // Importando useRoute para acessar os parâmetros
+import { View, Text, StyleSheet, Image, Button } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
+export default function Player({ navigation }) {
+  const route = useRoute();
+  const { name, image } = route.params || {};
 
-const Player = () => {
-  const route = useRoute(); // Obtendo os parâmetros da rota
-  const { name, image, description, tracks } = route.params; // Acessando os parâmetros passados
+  if (!name || !image) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>Dados não encontrados!</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: image }} style={styles.image} />
+      <Image
+        source={{ uri: image }}
+        style={styles.image}
+        onError={(e) => console.log("Erro ao carregar imagem:", e.nativeEvent.error)}
+      />
       <Text style={styles.title}>{name}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.tracks}>Número de faixas: {tracks}</Text>
+
+      <Button
+        title="Voltar para Home"
+        onPress={() => navigation.navigate('Home')} 
+      />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -37,15 +50,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 10,
   },
-  description: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginBottom: 10,
-  },
-  tracks: {
-    fontSize: 14,
-    color: '#AFAFAF',
+  error: {
+    color: 'red',
+    fontSize: 18,
   },
 });
-
-export default Player;

@@ -2,15 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, SafeAreaView, TextInput, Alert, TouchableOpacity, Modal } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function ProfileScreen() {
+export default function Perfil() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);  
+  const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false); 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [modalName, setModalName] = useState(name);
+  const [modalEmail, setModalEmail] = useState(email);
+  const [modalBirthday, setModalBirthday] = useState('');
 
   const handleSendImage = async (imageUri) => {
     try {
@@ -33,12 +37,11 @@ export default function ProfileScreen() {
 
       const result = await res.json();
       setProfileImage(result.url);
-      console.log(result)
+      console.log(result);
     } catch (e) {
       console.error('Erro ao enviar imagem:', e);
       Alert.alert('Erro', 'Não foi possível enviar a imagem.');
     }
-    
   };
 
   const fetchUserData = async () => {
@@ -91,13 +94,15 @@ export default function ProfileScreen() {
 
   const handleSave = () => {
     setIsEditing(false);
+    setName(modalName);
+    setEmail(modalEmail);
     Alert.alert('Perfil atualizado', 'Suas alterações foram salvas.');
   };
 
   const handleChangePassword = () => {
     if (newPassword === confirmPassword) {
       Alert.alert('Sucesso', 'Senha alterada com sucesso!');
-      setIsModalVisible(false);
+      setIsPasswordModalVisible(false);  
     } else {
       Alert.alert('Erro', 'As senhas não coincidem.');
     }
@@ -106,6 +111,17 @@ export default function ProfileScreen() {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  const handleOpenEditModal = () => {
+    setModalName(name);
+    setModalEmail(email);
+    setModalBirthday('');
+    setIsEditModalVisible(true);  
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalVisible(false);  
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,6 +134,7 @@ export default function ProfileScreen() {
                 style={styles.avatar}
               />
             </TouchableOpacity>
+            <Text style={styles.NomeP}>Higor</Text>
             {isEditing ? (
               <TextInput
                 style={styles.nameInput}
@@ -130,31 +147,55 @@ export default function ProfileScreen() {
             <Text style={styles.email}>{email}</Text>
           </View>
 
-          <View style={styles.profileBody}>
-            <Text style={styles.bioTitle}>Biografia</Text>
-            {isEditing ? (
-              <TextInput
-                style={styles.bioInput}
-                value={bio}
-                onChangeText={(text) => setBio(text)}
-                multiline
-              />
-            ) : (
-              <Text style={styles.bio}>{bio}</Text>
-            )}
-          </View>
 
-          <TouchableOpacity onPress={isEditing ? handleSave : () => setIsEditing(true)} style={styles.botao}>
-            <Text style={styles.botaoText}>{isEditing ? 'Salvar' : 'Editar Perfil'}</Text>
+          <TouchableOpacity onPress={handleOpenEditModal} style={styles.botao}>
+            <Text style={styles.botaoText}>Editar Informações</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.botao}>
+          <TouchableOpacity onPress={() => setIsPasswordModalVisible(true)} style={styles.botao}>
             <Text style={styles.botaoText}>Trocar Senha</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <Modal visible={isModalVisible} transparent={true} animationType="slide">
+      <Modal visible={isEditModalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Editar Perfil</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              value={modalName}
+              onChangeText={setModalName}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={modalEmail}
+              onChangeText={setModalEmail}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Data de Aniversário"
+              value={modalBirthday}
+              onChangeText={setModalBirthday}
+            />
+
+            <TouchableOpacity onPress={handleSave} style={styles.botao}>
+              <Text style={styles.botaoText}>Salvar Alterações</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleCloseEditModal} style={styles.botao}>
+              <Text style={styles.botaoText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={isPasswordModalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Trocar Senha</Text>
@@ -175,7 +216,7 @@ export default function ProfileScreen() {
             <TouchableOpacity onPress={handleChangePassword} style={styles.botao}>
               <Text style={styles.botaoText}>Confirmar</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.botao}>
+            <TouchableOpacity onPress={() => setIsPasswordModalVisible(false)} style={styles.botao}>
               <Text style={styles.botaoText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -192,8 +233,12 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
   },
-  margem:{
-    margin:20
+  NomeP:{
+    fontSize:20,
+    color:'white'
+  },
+  margem: {
+    margin: 20,
   },
   profileHeader: {
     alignItems: 'center',

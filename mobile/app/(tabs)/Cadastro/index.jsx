@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, TouchableOpacity, Alert, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableOpacity, SafeAreaView, Image} from 'react-native';
 import { Link } from 'expo-router';
 
-export default function App() {
-    const [name, setName] = useState("");
-    const [bday, setBday] = useState("");
+export default function Cadastro() {
+    const [nome, setNome] = useState("");
+    const [nascimento, setNascimento] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [senha, setSenha] = useState("");
 
-    const handleRegister = () => {
-        if (!name || !bday || !email || !password) {
+    const handleRegister = async() => {
+        if (!nome || !nascimento || !email || !senha) {
             return alert('Todos os campos devem ser preenchidos');
         }
 
-        const formData = { name: name, bday: bday, email: email, password: password };
+        const formData = { nome: nome, nascimento: nascimento, email: email, senha: senha };
 
         try {
-            const res = fetch("http://localhost:8000/registro", {
+            const res = await fetch("http://localhost:8000/autenticacao/registro", {
                 method: "POST",
                 headers: {
                     Accept: "application/json",
@@ -24,12 +24,12 @@ export default function App() {
                 },
                 body: JSON.stringify(formData),
             });
-            switch (response.status) {
+        console.log(res.status)
+            switch (res.status) {
                 case 201:
                     alert("Usuário criado");
                     break;
                 case 406:
-                    alert("Preencha todos os campos");
                     break;
                 case 418:
                     alert("Email já cadastrado");
@@ -38,7 +38,9 @@ export default function App() {
                     alert("Erro ao se conectar com servidor");
                     break;
             }
-        } catch (error) { }
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     return (
@@ -54,8 +56,8 @@ export default function App() {
                         style={styles.inputup}
                         placeholder="Name"
                         placeholderTextColor="#fff"
-                        value={name}
-                        onChangeText={(text) => setName(text)}
+                        value={nome}
+                        onChangeText={(text) => setNome(text)}
                     />
                     <TextInput
                         style={styles.inputup}
@@ -69,16 +71,16 @@ export default function App() {
                         style={styles.inputup}
                         placeholder="dd/mm/aaaa"
                         placeholderTextColor="#fff"
-                        value={bday}
-                        onChangeText={(text) => setBday(text)}
+                        value={nascimento}
+                        onChangeText={(text) => setNascimento(text)}
                     />
                     <TextInput
                         style={styles.inputup}
                         placeholder="Senha"
                         placeholderTextColor="#fff"
                         secureTextEntry
-                        value={password}
-                        onChangeText={(text) => setPassword(text)}
+                        value={senha}
+                        onChangeText={(text) => setSenha(text)}
                     />
                     <Link href="/">
                         <TouchableOpacity style={styles.buttonup} onPress={handleRegister}>
